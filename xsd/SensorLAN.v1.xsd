@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="SensorLAN">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="Location" type="LocationType"/>
+      <xs:element name="Sensor" type="SensorType" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="time" type="xs:dateTime" use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:complexType name="LocationType">
+  <xs:sequence>
+    <xs:element name="Name" type="xs:string"/>
+    <xs:element name="Street" type="xs:string"/>
+    <xs:element name="Coords" type="xs:string"/>
+  </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="SensorType">
+  <xs:sequence>
+    <xs:element name="Value" type="SensorValueType"/>
+  </xs:sequence>
+  <xs:attribute name="id" type="xs:string" use="required"/>
+  <xs:attribute name="name" type="xs:string"/>
+  <xs:attribute name="model" type="xs:string"/>
+  <xs:attribute name="type" type="xs:string"/> <!-- FIXME määritä tyyppiin enum tai jotain vastaavaa -->
+  <xs:attribute name="relative" type="xs:boolean"/>
+</xs:complexType>
+
+<xs:complexType name="SensorValueType">
+  <xs:simpleContent>
+    <xs:extension base="xs:string">
+      <xs:attribute name="unit" type="xs:string"/>
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
+</xs:schema>
