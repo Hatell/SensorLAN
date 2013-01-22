@@ -10,10 +10,21 @@ from SensorXML import SensorXML
 
 class SensorGnuPG(GnuPGInterface.GnuPG):
 
-  def __init__(self):
+  def __init__(self, keyID = None):
     GnuPGInterface.GnuPG.__init__(self)
 
+    self._defaultKeyID = keyID
+
     pass # def __init__
+
+  def sign(self, unsignedbytes):
+    """FIXME"""
+
+    if self._defaultKeyID is None:
+      return None
+
+    return self.sign(self._defaultKeyID, unsignedbytes)
+    pass # def sign
 
   def sign(self, keyID, unsignedbytes):
     """
