@@ -17,24 +17,19 @@ class SensorGnuPG(GnuPGInterface.GnuPG):
 
     pass # def __init__
 
-  def sign(self, unsignedbytes):
-    """FIXME"""
-
-    if self._defaultKeyID is None:
-      return None
-
-    return self.sign(self._defaultKeyID, unsignedbytes)
-    pass # def sign
-
-  def sign(self, keyID, unsignedbytes):
+  def sign(self, unsignedbytes, keyID = None):
     """
 Sign given data and return signedbytes
 
-signdesbytes = sign(key, bytes)
+signdesbytes = sign(bytes, key)
 
 On error returns None
 """
+
     signedbytes = None
+
+    if keyID is None:
+      keyID = self._defaultKeyID
 
     try:
       proc = self.run(

@@ -51,7 +51,7 @@ dataStr = None
 
 if args.gpg_key is not None:
   gpg = SensorGnuPG()
-  dataStr = gpg.sign(args.gpg_key, xml.toStr())
+  dataStr = gpg.sign(xml.toStr(), args.gpg_key)
 else:
   dataStr = xml.toStr()
 

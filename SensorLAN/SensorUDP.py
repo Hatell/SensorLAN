@@ -42,7 +42,7 @@ sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
 sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 
 if args.gpg_key is not None:
-  data = gpg.sign(args.gpg_key, xml.toStr())
+  data = gpg.sign(xml.toStr(), args.gpg_key)
 else:
   data = xml.toStr()
 
