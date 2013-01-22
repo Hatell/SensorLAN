@@ -55,7 +55,7 @@ class SensorXML(object):
       },
       "Sensors": [{
         "id": s.get("id"),
-        "relative": s.get("relative"),
+        "relative": s.get("relative").lower() == "true",
         "name": s.get("name"),
         "model": s.get("model"),
         "type": s.get("type"),
@@ -74,7 +74,7 @@ class SensorXML(object):
         "name": s["name"],
         "model": s["model"],
         "type": s["type"],
-        "relative": s["relative"],
+        "relative": str(s["relative"]).lower(),
       },
       SL.Value({"unit": s["unit"]}, s["value"])
       )
