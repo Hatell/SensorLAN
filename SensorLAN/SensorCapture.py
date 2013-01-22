@@ -39,6 +39,7 @@ while True:
 
   print "Read %d from %s, %d" % (len(readData), fromAddr[0], fromAddr[1])
   if signed:
+    print readData
     data = gpg.verify(readData)
   else:
     data = readData
@@ -58,6 +59,8 @@ while True:
 
   if not valid:
     print "Data wasn't valid"
+    if gpg is not None and gpg.keyMissing:
+      print "Key is missing"
   else:
     print "Data was good"
   print

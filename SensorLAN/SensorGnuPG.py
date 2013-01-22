@@ -14,6 +14,7 @@ class SensorGnuPG(GnuPGInterface.GnuPG):
     GnuPGInterface.GnuPG.__init__(self)
 
     self._defaultKeyID = keyID
+    self.keyMissing = False
 
     pass # def __init__
 
@@ -78,6 +79,8 @@ On error returns None
       create_fhs=["stdin", "stdout", "stderr"]
     )
 
+    self.keyMissing = False
+
     try:
       proc.handles["stdin"].write(signedbytes)
       proc.handles["stdin"].close()
@@ -86,13 +89,21 @@ On error returns None
       proc.handles["stdout"].close()
 
       # Pick sign key id
-      m = re.search("key ID ([0-9A-F]{8})", proc.handles["stderr"].read())
+      prog_out = proc.handles["stderr"].read()
+
+      m = re.search("key ID ([0-9A-F]{8})", prog_out)
 
       keyId = m.group(1)
+
+      if re.search("gpg: Good signature from", prog_out) is None:
+        self.keyMissing = True
 
       proc.wait()
     except IOError as e:
       pass
+
+    if self.keyMissing:
+      return None
 
     # Check if SensorLAN attribute id is same as key which is used to sign data
     # Doesn't need XMLSchema validation
