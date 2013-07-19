@@ -18,6 +18,11 @@ parser.add_argument(
   help="FIXME",
 )
 parser.add_argument(
+  "--SensorLANDisplay",
+  action="store_true",
+  default=False,
+)
+parser.add_argument(
   "--udp",
   type=int,
   help="UDP port",
@@ -32,6 +37,15 @@ sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
 
 sock.bind(("", args.udp,))
 
+DBusProxy = None
+
+if args.SensorLANDisplay:
+  import dbus
+  DBusProxy = dbus.SessionBus().get_object(
+    "org.gnome.Shell",
+    "/org/gnome/Shell/Extensions/SensorLANDisplay"
+  )
+
 while True:
   (readData, fromAddr,) = sock.recvfrom(4092)
   signed = gpg.isSigned(readData)
@@ -39,7 +53,6 @@ while True:
 
   print "Read %d from %s, %d" % (len(readData), fromAddr[0], fromAddr[1])
   if signed:
-    print readData
     data = gpg.verify(readData)
   else:
     data = readData
@@ -61,7 +74,23 @@ while True:
     print "Data wasn't valid"
     if gpg is not None and gpg.keyMissing:
       print "Key is missing"
-  else:
-    print "Data was good"
-  print
 
+    continue
+
+  if valid and DBusProxy is not None:
+    d = xml.parse(data)
+
+    if d["id"] != "C4E132E5":
+      continue
+
+    d_out = filter(lambda s: s["id"] == "C4E132E5_1", d["Sensors"])[0]
+    d_in = filter(lambda s: s["id"] == "C4E132E5_2", d["Sensors"])[0]
+    d_pat = filter(lambda s: s["id"] == "C4E132E5_3", d["Sensors"])[0]
+    d_val = filter(lambda s: s["id"] == "C4E132E5_4", d["Sensors"])[0]
+
+    DBusProxy.Display("o: %s  i: %s  v: %s  p: %s" % (
+      d_out["value"],
+      d_in["value"],
+      d_val["value"],
+      d_pat["value"], 
+    ))

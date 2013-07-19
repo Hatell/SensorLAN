@@ -5,4 +5,4 @@
 from SensorLAN import SensorLAN
 from SensorXML import SensorXML
 from SensorGnuPG import SensorGnuPG
-from SensorSocket import SensorSocketUDP, SensorSocketEthernet
+from SensorSocket import SensorSocketUDP, SensorSocketEthernet, SensorSocketDebug

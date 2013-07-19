@@ -33,7 +33,8 @@ class SensorSocketUDP(SensorSocket):
     return ("255.255.255.255", self.port,)
     pass # def address
 
-  pass # class SensorSocket
+  pass # class SensorSocketUDP
+
 
 class SensorSocketEthernet(SensorSocket):
   def __init__(self, ifname, port = 61000, no_ip = False):
@@ -77,3 +78,10 @@ class SensorSocketEthernet(SensorSocket):
 
   pass # class SensorSocketEthernet
 
+
+class SensorSocketDebug(SensorSocket):
+  def sendto(self, data):
+    print data
+    pass # def sendto
+
+  pass  # class SensorSocketDebug
