@@ -5,6 +5,7 @@
 import argparse
 import pprint
 
+from decimal import Decimal
 from socket import *
 
 from SensorGnuPG import SensorGnuPG
@@ -80,17 +81,5 @@ while True:
   if valid and DBusProxy is not None:
     d = xml.parse(data)
 
-    if d["id"] != "C4E132E5":
-      continue
+    DBusProxy.Display(", ".join(["%s %.1f" % (s["name"], Decimal(s["value"]),) for s in d["Sensors"]]))
 
-    d_out = filter(lambda s: s["id"] == "C4E132E5_1", d["Sensors"])[0]
-    d_in = filter(lambda s: s["id"] == "C4E132E5_2", d["Sensors"])[0]
-    d_pat = filter(lambda s: s["id"] == "C4E132E5_3", d["Sensors"])[0]
-    d_val = filter(lambda s: s["id"] == "C4E132E5_4", d["Sensors"])[0]
-
-    DBusProxy.Display("o: %s  i: %s  v: %s  p: %s" % (
-      d_out["value"],
-      d_in["value"],
-      d_val["value"],
-      d_pat["value"], 
-    ))
