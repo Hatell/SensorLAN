@@ -6,6 +6,7 @@ import argparse
 import pprint
 
 from decimal import Decimal
+from datetime import datetime
 from socket import *
 
 from SensorGnuPG import SensorGnuPG
@@ -46,6 +47,11 @@ if args.SensorLANDisplay:
     "org.gnome.Shell",
     "/org/gnome/Shell/Extensions/SensorLANDisplay"
   )
+  DBusSensorLANIface = dbus.Interface(
+    DBusProxy,
+    "org.gnome.Shell.Extensions.SensorLANDisplay"
+  )
+  DBusSensorLANIface.Display(u"Ready")
 
 while True:
   (readData, fromAddr,) = sock.recvfrom(4092)
@@ -81,5 +87,8 @@ while True:
   if valid and DBusProxy is not None:
     d = xml.parse(data)
 
-    DBusProxy.Display(", ".join(["%s %.1f" % (s["name"], Decimal(s["value"]),) for s in d["Sensors"]]))
+    DBusSensorLANIface.Display(", ".join([
+        "%s %.1f" % (s["name"], Decimal(s["value"]),) for s in d["Sensors"]
+      ]) + " (%s)" % (datetime.now().strftime("%H.%M"),)
+    )
 
