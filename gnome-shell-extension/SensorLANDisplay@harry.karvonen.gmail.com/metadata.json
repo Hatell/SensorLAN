@@ -1,0 +1,6 @@
+{
+"shell-version": ["3.14"],
+"uuid": "SensorLANDisplay@harry.karvonen.gmail.com",
+"name": "SensorLAN Display",
+"description": "Display SensorLAN data."
+}
