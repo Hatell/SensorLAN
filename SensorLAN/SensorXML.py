@@ -2,43 +2,73 @@
 # vi: et sw=2 fileencoding=utf8
 #
 
-from StringIO import StringIO
 from lxml import etree
 from datetime import datetime
 
-import ElementsSensorLAN as SL
 
 class SensorXML(object):
-  def __init__(self, schemaFile = None):
-    """FIXME"""
+  """SensorXML handles XML to dict and dict to XML conversions.
+
+Validates data when read.
+"""
+
+
+  def __init__(self, schemaFile=None):
+    """SensorXML = SensorXML(schemaFile=None)
+
+If schemaFile is None then objects uses internal xsd schema, SensorLAN.v1.xsd
+"""
     super(SensorXML, self).__init__()
 
     self.schema = None
+    self.doc = None
 
     if schemaFile is not None:
       self.schema = etree.XMLSchema(etree.parse(schemaFile))
+    else:
+      import os
+      self.schema = etree.XMLSchema(etree.parse(os.path.join(
+        os.path.dirname(
+          os.path.abspath(__file__),
+        ),
+        "..",
+        "xsd",
+        "SensorLAN.v1.xsd",
+      )))
 
-    pass # def __init__
+    # def __init__
+
 
   def parse(self, data):
-    """FIXME"""
-    self.doc = etree.parse(StringIO(data))
+    """dict = SensorLAN(data)
+
+Data must be raw xml-data.
+"""
+    self.doc = etree.fromstring(data)
     self.validate()
 
     return self.toDict()
-    pass # def parse
+    # def parse
+
 
   def validate(self):
-    """FIXME"""
+    """None = SensorXML.validate()
+
+Validates data in memory.
+"""
     if self.schema is None:
       return
 
     self.schema.assertValid(self.doc)
 
-    pass # def validate
+    # def validate
+
 
   def toDict(self):
-    """FIXME"""
+    """dict|None = SensorXML.toDict()
+
+Return None if no data, otherwise returns dict.
+"""
     if self.doc is None:
       return None
 
@@ -65,9 +95,16 @@ class SensorXML(object):
       ]
     }
     return d
-    pass # def toDict
+    # def toDict
+
 
   def fromDict(self, d):
+    """None = SensorXML(d)
+
+Loads data from given dict (d) to memory.
+"""
+    from . import ElementsSensorLAN as SL
+
     sensors = [
       SL.Sensor({
         "id": s["id"],
@@ -94,10 +131,14 @@ class SensorXML(object):
     )
 
     self.validate()
-    pass # def fromDict
+    # def fromDict
 
 
   def toStr(self, pretty_print=True):
+    """str|None = SensorXML.toStr(pretty_print=True)
+
+Return None if no data, otherwise returns raw xml-data.
+"""
     if self.doc is None:
       return None
 
@@ -107,22 +148,9 @@ class SensorXML(object):
       encoding="utf-8",
       pretty_print=pretty_print
     )
-    pass # def toStr
+    # def toStr
 
-  pass # class SensorXML
 
-if __name__ == "__main__":
-  xml = SensorXML("./xsd/SensorLAN.v1.xsd")
+  # class SensorXML
 
-  data = None
 
-  with open("samples/unsigned_sample.xml") as f:
-    data = f.read()
-
-  import pprint
-  d = (xml.parse(data))
-
-  d["time"] = datetime.now()
-
-  xml.fromDict(d)
-  print xml.toStr()

@@ -3,7 +3,7 @@
 #
 
 from socket import *
-from impacket import ImpactPacket
+
 
 class SensorSocket(object):
   def __init__(self):
@@ -46,6 +46,8 @@ class SensorSocketEthernet(SensorSocket):
     pass # def __init__
 
   def frame(self, data):
+    from impacket import ImpactPacket
+
     # Ethernet
     ether = ImpactPacket.Ethernet()
     ether.set_ether_dhost((0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF))
