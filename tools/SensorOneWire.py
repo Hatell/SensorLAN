@@ -52,6 +52,11 @@ parser.add_argument(
   "--location-coords",
   default="",
 )
+parser.add_argument(
+  "--output",
+  "-o",
+  type=argparse.FileType("wb"),
+)
 
 args = parser.parse_args()
 
@@ -112,7 +117,6 @@ else:
     None,
   )
 
-
 sensorLAN.sendDict({
   "id": u"NOID",
   "time": datetime.now(),
@@ -124,4 +128,6 @@ sensorLAN.sendDict({
   "Sensors": data,
 })
 
+if args.output is not None:
+  args.output.write(sensorLAN.sensorXML.toStr())
 
