@@ -5,9 +5,7 @@
 import argparse
 import pprint
 
-import socket
-
-from SensorLAN import SensorGnuPG, SensorXML
+from SensorLAN import SensorLAN, SensorGnuPG, SensorXML, SensorSocketUDP
 
 
 parser = argparse.ArgumentParser()
@@ -38,17 +36,15 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-gpg = SensorGnuPG()
-xml = SensorXML(args.schema)
-xml.parse(args.file.read())
+sensorSock = SensorSocketUDP(args.port, args.addr)
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+sensorGPG = None
+sensorXML = SensorXML(args.schema)
+sensorXML.parse(args.file.read())
 
 if args.gpg_key is not None:
-  data = gpg.sign(xml.toStr(), args.gpg_key)
-else:
-  data = xml.toStr()
+  sensorGPG = SensorGnuPG(args.gpg_key)
 
-sock.sendto(data, (args.addr, args.port,))
-sock.close()
+sensorLAN = SensorLAN(sensorSock, sensorXML, sensorGPG)
+
+sensorLAN.send()
