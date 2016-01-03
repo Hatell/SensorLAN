@@ -26,18 +26,16 @@ parser.add_argument(
 )
 parser.add_argument(
   "--table",
+  metavar="ID",
+  help="Special value: new and delete-<table-id>",
 )
 parser.add_argument(
   "--input",
   "-i",
   type=argparse.FileType("rb"),
-  required=True,
 )
 
 args = parser.parse_args()
-
-xml = SensorXML()
-d = xml.parse(args.input.read())
 
 key = json.loads(args.json_key.read())
 
@@ -102,7 +100,18 @@ if args.table == "new":
   print u"Create fusion table:"
   print u" - (id STRING, name STRING, time DATETIME, value NUMBER)"
   print u" - share it with this email %s" % key["client_email"]
+  sys.exit()
+elif args.table.startswith("delete-"):
+  print u"Deleting table", args.table[7:]
+  print fusiontables.table().delete(tableId=args.table[7:]).execute()
+  sys.exit()
 
+
+if args.input is None:
+  sys.exit()
+
+xml = SensorXML()
+d = xml.parse(args.input.read())
 
 time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
