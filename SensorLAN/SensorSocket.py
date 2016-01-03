@@ -8,30 +8,36 @@ from socket import *
 class SensorSocket(object):
   def __init__(self):
     self.sock = None
-    pass # def __init__
+    # def __init__
+
 
   def sendto(self, data):
     self.sock.sendto(self.frame(data), self.address())
-    pass # def sendto
+    # def sendto
+
 
   pass # class SensorSocket
 
 
 class SensorSocketUDP(SensorSocket):
-  def __init__(self, port = 61000):
+  def __init__(self, port = 61000, addr = "<broadcast>"):
     super(SensorSocketUDP, self).__init__()
     self.sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
     self.sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
     self.port = port
+    self.addr = addr
     pass # def __init__
+
 
   def frame(self, data):
     return data
-    pass # def frame
+    # def frame
+
 
   def address(self):
-    return ("255.255.255.255", self.port,)
-    pass # def address
+    return (self.addr, self.port,)
+    # def address
+
 
   pass # class SensorSocketUDP
 
@@ -43,7 +49,8 @@ class SensorSocketEthernet(SensorSocket):
     self.ifname = ifname
     self.port = port
     self.no_ip = no_ip
-    pass # def __init__
+    # def __init__
+
 
   def frame(self, data):
     from impacket import ImpactPacket
@@ -72,11 +79,13 @@ class SensorSocketEthernet(SensorSocket):
       ether.contains(ip)
 
     return ether.get_packet()
-    pass # def frame
+    # def frame
+
 
   def address(self):
     return (self.ifname, 0,)
-    pass # def address
+    # def address
+
 
   pass # class SensorSocketEthernet
 
@@ -84,6 +93,7 @@ class SensorSocketEthernet(SensorSocket):
 class SensorSocketDebug(SensorSocket):
   def sendto(self, data):
     print data
-    pass # def sendto
+    # def sendto
+
 
   pass  # class SensorSocketDebug
