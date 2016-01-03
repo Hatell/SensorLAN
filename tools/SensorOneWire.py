@@ -38,6 +38,18 @@ parser.add_argument(
   action="store_true",
   help="Check status and exit",
 )
+parser.add_argument(
+  "--location-name",
+  default="",
+)
+parser.add_argument(
+  "--location-street",
+  default="",
+)
+parser.add_argument(
+  "--location-coodrs",
+  default="",
+)
 
 args = parser.parse_args()
 
@@ -103,9 +115,9 @@ sensorLAN.sendDict({
   "id": u"NOID",
   "time": datetime.now(),
   "Location": {
-    "name": u"Veijonhovi",
-    "street": u"Insinöörinkatu",
-    "coords": u"FIXME",
+    "name": args.location_name,
+    "street": args.location_street,
+    "coords": args.location_coords,
   },
   "Sensors": data,
 })
