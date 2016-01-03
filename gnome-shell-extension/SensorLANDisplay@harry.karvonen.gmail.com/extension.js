@@ -27,6 +27,10 @@ const SensorLAN = new Lang.Class({
     this._dbusImpl.export( Gio.DBus.session, "/org/gnome/Shell/Extensions/SensorLANDisplay");
   },
 
+  destroy: function() {
+    this._dbusImpl.unexport();
+  },
+
   Display: function(text) {
     SensorLAN_label.set_text(text);
     return "OK";
@@ -50,5 +54,9 @@ function enable() {
 }
 
 function disable() {
+  if (SensorLAN_DBus) {
+    SensorLAN_DBus.destroy();
+    SensorLAN_DBus = null;
+  }
   Main.panel._centerBox.remove_actor(SensorLAN_bin);
 }
