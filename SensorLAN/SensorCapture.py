@@ -3,21 +3,20 @@
 #
 
 import argparse
+import socket
 import pprint
 
 from decimal import Decimal
 from datetime import datetime
-from socket import *
 
-from SensorGnuPG import SensorGnuPG
-from SensorXML import SensorXML
+from SensorLAN import SensorGnuPG, SensorXML
+
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
   "--schema",
-  default="./xsd/SensorLAN.v1.xsd",
-  help="FIXME",
+  help="SensorLAN.xsd location",
 )
 parser.add_argument(
   "--SensorLANDisplay",
@@ -25,24 +24,30 @@ parser.add_argument(
   default=False,
 )
 parser.add_argument(
-  "--udp",
+  "--bind",
+  help="Bind to address, default all addresses",
+  default="",
+)
+parser.add_argument(
+  "--port",
   type=int,
-  help="UDP port",
-  required=True,
+  help="UDP port, default 61000",
+  default=61000,
 )
 
 args = parser.parse_args()
 
 gpg = SensorGnuPG()
 xml = SensorXML(args.schema)
-sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
-sock.bind(("", args.udp,))
+sock.bind((args.bind, args.port,))
 
 DBusProxy = None
 
 if args.SensorLANDisplay:
   import dbus
+  import dbus.exceptions
   DBusProxy = dbus.SessionBus().get_object(
     "org.gnome.Shell",
     "/org/gnome/Shell/Extensions/SensorLANDisplay"
@@ -51,14 +56,13 @@ if args.SensorLANDisplay:
     DBusProxy,
     "org.gnome.Shell.Extensions.SensorLANDisplay"
   )
-  DBusSensorLANIface.Display(u"Ready")
+
 
 while True:
   (readData, fromAddr,) = sock.recvfrom(4092)
   signed = gpg.isSigned(readData)
   valid = False
 
-  print "Read %d from %s, %d" % (len(readData), fromAddr[0], fromAddr[1])
   if signed:
     data = gpg.verify(readData)
   else:
@@ -77,6 +81,8 @@ while True:
   except:
     valid = False
 
+  print "Read %d from %s, %d" % (len(readData), fromAddr[0], fromAddr[1])
+
   if not valid:
     print "Data wasn't valid"
     if gpg is not None and gpg.keyMissing:
@@ -87,8 +93,15 @@ while True:
   if valid and DBusProxy is not None:
     d = xml.parse(data)
 
-    DBusSensorLANIface.Display(", ".join([
-        "%s %.1f" % (s["name"], Decimal(s["value"]),) for s in d["Sensors"]
-      ]) + " (%s)" % (datetime.now().strftime("%H.%M"),)
-    )
+    try:
+      DBusSensorLANIface.Display(
+        ", ".join([
+          "%s %.1f" % (s["name"], Decimal(s["value"]),) for s in d["Sensors"]
+        ]) + " (%s)" % (datetime.now().strftime("%H.%M"),)
+      )
+    except dbus.exceptions.DBusException as e:
+      print e
+      print "Exception"
+      pass
+
 
