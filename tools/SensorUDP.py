@@ -5,23 +5,27 @@
 import argparse
 import pprint
 
-from socket import *
+import socket
 
-from SensorGnuPG import SensorGnuPG
-from SensorXML import SensorXML
+from SensorLAN import SensorGnuPG, SensorXML
+
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
   "--schema",
-  default="./xsd/SensorLAN.v1.xsd",
-  help="FIXME",
+  help="SensorLAN.v1.xsd schema location.",
 )
 parser.add_argument(
-  "--udp",
+  "--port",
   type=int,
   help="UDP port",
-  required=True,
+  default=61000,
+)
+parser.add_argument(
+  "--addr",
+  default="<broadcast>",
+  help="Address to send, default <broadcast>",
 )
 parser.add_argument(
   "--gpg-key",
@@ -38,13 +42,13 @@ gpg = SensorGnuPG()
 xml = SensorXML(args.schema)
 xml.parse(args.file.read())
 
-sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
-sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 if args.gpg_key is not None:
   data = gpg.sign(xml.toStr(), args.gpg_key)
 else:
   data = xml.toStr()
 
-sock.sendto(data, ("<broadcast>", args.udp,))
+sock.sendto(data, (args.addr, args.port,))
 sock.close()

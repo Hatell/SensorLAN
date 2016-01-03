@@ -3,24 +3,23 @@
 #
 
 import argparse
-from lxml import etree
+
+from SensorLAN import SensorXML
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
   "--schema",
-  default="./xsd/SensorLAN.v1.xsd",
-  help="SensorLan XSD Schema",
+  help="SensorLAN xsd schema",
 )
 parser.add_argument(
   "file",
+  type=argparse.FileType("rb"),
 )
 
 args = parser.parse_args()
 
-schemadoc = etree.parse(args.schema)
 
-schema = etree.XMLSchema(schemadoc)
-
-doc = etree.parse(args.file)
-
-print schema.validate(doc)
+xml = SensorXML(args.schema)
+xml.parse(args.file.read())
+print "Valid"

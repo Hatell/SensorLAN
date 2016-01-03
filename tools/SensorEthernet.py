@@ -8,15 +8,14 @@ import pprint
 from socket import *
 from impacket import ImpactPacket
 
-from SensorGnuPG import SensorGnuPG
-from SensorXML import SensorXML
+from SensorLAN import SensorGnuPG, SensorXML
+
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
   "--schema",
-  default="./xsd/SensorLAN.v1.xsd",
-  help="FIXME",
+  help="SensorLAN.v1.xsd schema location",
 )
 parser.add_argument(
   "--ifname",
@@ -28,10 +27,10 @@ parser.add_argument(
   default=False,
 )
 parser.add_argument(
-  "--udp",
+  "--port",
   type=int,
   help="UDP port",
-  required=True,
+  default=61000,
 )
 parser.add_argument(
   "--gpg-key",
@@ -67,7 +66,7 @@ ip.set_ip_dst("255.255.255.255")
 
 # UDP
 udp = ImpactPacket.UDP()
-udp.set_uh_dport(args.udp)
+udp.set_uh_dport(args.port)
 
 # Data
 data = ImpactPacket.Data(dataStr)
