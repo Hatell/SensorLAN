@@ -40,10 +40,12 @@ parser.add_argument(
 )
 parser.add_argument(
   "--location-name",
+  type=unicode,
   default="",
 )
 parser.add_argument(
   "--location-street",
+  type=unicode,
   default="",
 )
 parser.add_argument(
