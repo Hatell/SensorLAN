@@ -47,7 +47,7 @@ parser.add_argument(
   default="",
 )
 parser.add_argument(
-  "--location-coodrs",
+  "--location-coords",
   default="",
 )
 
