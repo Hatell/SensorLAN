@@ -40,12 +40,12 @@ parser.add_argument(
 )
 parser.add_argument(
   "--location-name",
-  type=lambda s: s.decode(sys.stdin.encoding),
+  #type=lambda s: s.decode(sys.stdin.encoding),
   default="",
 )
 parser.add_argument(
   "--location-street",
-  type=lambda s: s.decode(sys.stdin.encoding),
+  #type=lambda s: s.decode(sys.stdin.encoding),
   default="",
 )
 parser.add_argument(
