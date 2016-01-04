@@ -115,8 +115,10 @@ d = xml.parse(args.input.read())
 
 time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+query = u""
+
 for s in d["Sensors"]:
-  query = u"INSERT INTO %s (id, name, time, value) VALUES ('%s', '%s', '%s', '%s')" % (
+  query += u"INSERT INTO %s (id, name, time, value) VALUES ('%s', '%s', '%s', '%s');" % (
     args.table,
     s["id"],
     s["name"],
@@ -124,5 +126,5 @@ for s in d["Sensors"]:
     s["value"],
   )
 
-  print fusiontables.query().sql(sql=query).execute()
+print fusiontables.query().sql(sql=query).execute()
 
