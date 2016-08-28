@@ -38,6 +38,15 @@ parser.add_argument(
   help="Device name",
 )
 parser.add_argument(
+  "--preview-only",
+  type=int,
+  help="Preview only x seconds",
+)
+parser.add_argument(
+  "--camera-preview-alpha",
+  default=100,
+)
+parser.add_argument(
   "--camera-awb-mode",
 )
 parser.add_argument(
@@ -83,7 +92,13 @@ if args.camera_awb_mode:
   camera.awb_mode = args.camera_awb_mode
 
 dst = "/tmp/SensorLANPiCamera.jpg"
-camera.start_preview(alpha=200)
+camera.start_preview(alpha=args.camera_preview_alpha)
+
+if args.preview_only:
+  sleep(args.preview_only)
+  camera.stop_preview()
+  sys.exit()
+
 
 sleep(5)
 camera.capture(dst)
