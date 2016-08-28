@@ -72,7 +72,7 @@ parser.add_argument(
 )
 parser.add_argument(
   "--tesseract-config",
-  default="digits",
+  default="-psm 6 digits",
 )
 parser.add_argument(
   "--debug",
