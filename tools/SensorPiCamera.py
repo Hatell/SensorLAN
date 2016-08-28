@@ -66,6 +66,11 @@ parser.add_argument(
   help="https://www.raspberrypi.org/learning/getting-started-with-picamera/worksheet/",
 )
 parser.add_argument(
+  "--image-crop",
+  type=lambda s: map(int, s.split(",")),
+  help="LEFT,TOP,RIGHT,BOTTOM",
+)
+parser.add_argument(
   "--tesseract-config",
   default="digits",
 )
@@ -119,6 +124,16 @@ camera.capture(dst)
 camera.stop_preview()
 
 value = None
+
+if args.image_crop:
+  crop_dst = "%s_crop.jpg" % dst.split(".")[0]
+
+  with Image.open(dst) as img:
+
+    crop_img = img.crop(args.image_crop)
+    crop_img.save(crop_dst)
+
+  dst = crop_dst
 
 with Image.open(dst) as img:
   value = pytesseract.image_to_string(img, config=args.tesseract_config).strip()
