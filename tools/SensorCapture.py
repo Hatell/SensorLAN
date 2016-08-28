@@ -103,5 +103,7 @@ while True:
       print e
       print "Exception"
       pass
+    except TypeError:
+      pass
 
 
