@@ -92,7 +92,7 @@ camera.stop_preview()
 value = None
 
 with Image.open(dst) as img:
-  value = pytesseract.image_to_string(img).strip()
+  value = pytesseract.image_to_string(img, config=args.tesseract_config).strip()
 
 print value
 
