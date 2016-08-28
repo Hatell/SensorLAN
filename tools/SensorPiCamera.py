@@ -44,7 +44,7 @@ parser.add_argument(
 )
 parser.add_argument(
   "--camera-resolution",
-  type=lambda s: s.split("x"),
+  type=lambda s: map(int, s.split("x")),
 )
 parser.add_argument(
   "--camera-preview",
