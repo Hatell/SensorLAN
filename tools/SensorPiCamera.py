@@ -39,7 +39,17 @@ parser.add_argument(
 )
 parser.add_argument(
   "--preview-only",
+  default=False,
+  action="store_true",
+)
+parser.add_argument(
+  "--camera-resolution",
+  type=lambda s: s.split("x"),
+)
+parser.add_argument(
+  "--camera-preview",
   type=int,
+  default=10,
   help="Preview only x seconds",
 )
 parser.add_argument(
@@ -87,6 +97,9 @@ args = parser.parse_args()
 
 camera = PiCamera()
 
+if args.camera_resolution:
+  camera.resolution = args.camera_resolution
+
 if args.camera_exposure_mode:
   camera.exposure_mode = args.camera_exposure_mode
 
@@ -96,13 +109,12 @@ if args.camera_awb_mode:
 dst = "/tmp/SensorLANPiCamera.jpg"
 camera.start_preview(alpha=args.camera_preview_alpha)
 
+sleep(args.camera_preview)
+
 if args.preview_only:
-  sleep(args.preview_only)
   camera.stop_preview()
   sys.exit()
 
-
-sleep(5)
 camera.capture(dst)
 camera.stop_preview()
 
