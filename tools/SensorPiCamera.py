@@ -44,7 +44,9 @@ parser.add_argument(
 )
 parser.add_argument(
   "--camera-preview-alpha",
-  default=100,
+  type=int,
+  default=220,
+  help="value between 0 and 255",
 )
 parser.add_argument(
   "--camera-awb-mode",
