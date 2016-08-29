@@ -66,6 +66,11 @@ parser.add_argument(
   help="https://www.raspberrypi.org/learning/getting-started-with-picamera/worksheet/",
 )
 parser.add_argument(
+  "--image-rotate",
+  type=int,
+  help="degree counter-clockwise",
+)
+parser.add_argument(
   "--image-crop",
   type=lambda s: map(int, s.split(",")),
   help="LEFT,TOP,RIGHT,BOTTOM",
@@ -124,6 +129,16 @@ camera.capture(dst)
 camera.stop_preview()
 
 value = None
+
+if args.image_rotate:
+  rotate_dst = "%s_rotate.jpg" % dst.split(".")[0]
+
+  with Image.open(dst) as img:
+
+    rotate_img = img.rotate(args.image_rotate)
+    rotate_img.save(rotate_dst)
+
+  dst = rotate_dst
 
 if args.image_crop:
   crop_dst = "%s_crop.jpg" % dst.split(".")[0]
