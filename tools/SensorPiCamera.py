@@ -71,6 +71,17 @@ parser.add_argument(
   help="degree counter-clockwise",
 )
 parser.add_argument(
+  "--image-convert",
+  type=int,
+  help="Number of colors",
+)
+parser.add_argument(
+  "--image-convert-dither",
+  default=False,
+  action="store_true",
+  help="Use default dithering",
+)
+parser.add_argument(
   "--image-crop",
   type=lambda s: map(int, s.split(",")),
   help="LEFT,TOP,RIGHT,BOTTOM",
@@ -129,6 +140,21 @@ camera.capture(dst)
 camera.stop_preview()
 
 value = None
+
+if args.image_convert:
+  convert_dst = "%s_convert.jpg" % dst.split(".")[0]
+
+  with Image.open(dst) as img:
+
+    convert_img = img.convert(
+      "P",
+      dither=None if args.image_convert_dither else Image.NONE,
+      palette=Image.ADAPTIVE,
+      colors=args.image_convert,
+    )
+    convert_img.save(convert_dst)
+
+  dst = convert_dst
 
 if args.image_rotate:
   rotate_dst = "%s_rotate.jpg" % dst.split(".")[0]
