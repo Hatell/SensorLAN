@@ -81,7 +81,7 @@ if args.table is None:
 
   sys.exit()
 
-import pylab as pl
+import matplotlib.pyplot as pl
 import numpy as np
 
 x = {}
